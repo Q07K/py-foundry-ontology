@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     neo4j_password: str
 
     # sqlite
-    database_path: str
+    sqlite_path: str
 
     # Settings Config
     model_config = SettingsConfigDict(
