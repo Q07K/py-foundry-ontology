@@ -1,6 +1,6 @@
 from neo4j import Driver, GraphDatabase
 
-from src.core.config import get_settings
+from app.core.config import get_settings
 
 
 def connection() -> Driver:
