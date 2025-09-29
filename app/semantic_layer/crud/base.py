@@ -26,18 +26,23 @@ def create_link(driver: Driver, link: LinkType) -> LinkType | None:
     SET link += $properties, link.created_at = datetime()
     RETURN link
     """
+    parameters = {
+        "from_id": link.from_object_id,
+        "to_id": link.to_object_id,
+        "properties": link.properties,
+    }
 
     with driver.session() as session:
-        result = session.run(
-            query=query,
-            parameters={
-                "from_id": link.from_object_id,
-                "to_id": link.to_object_id,
-                "properties": link.properties,
-            },
-        )
+        with session.begin_transaction() as tx:
+            result = tx.run(query=query, parameters=parameters)
+            record = result.single()
+            tx.commit()
 
-    return link if result else None
+            if record:
+                link.created_at = record["link"]["created_at"]
+                return link
+
+    return None
 
 
 def get_links(
@@ -80,21 +85,28 @@ def create_object(
     CREATE (obj:{data.type} {{
         id: $primary_value,
         type: $type,
-        properties: $properties,
         created_at: datetime(),
         updated_at: datetime()
     }})
     SET obj += $properties
     RETURN obj
     """
-    with driver.session() as session:
-        result = session.run(
-            query=query,
-            parameters={
-                "primary_value": data.primary_value,
-                "type": data.type,
-                "properties": data.properties,
-            },
-        )
+    parameters = {
+        "primary_value": data.primary_value,
+        "type": data.type,
+        "properties": data.properties,
+    }
 
-        return data if result else None
+    with driver.session() as session:
+        with session.begin_transaction() as tx:
+            result = tx.run(query=query, parameters=parameters)
+            record = result.single()
+            tx.commit()
+
+            if record:
+                obj_data = record["obj"]
+                data.created_at = obj_data["created_at"]
+                data.updated_at = obj_data["updated_at"]
+                return data
+
+    return None
