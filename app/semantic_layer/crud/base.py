@@ -82,13 +82,15 @@ def create_object(
     data: ObjectInstance,
 ) -> ObjectInstance | None:
     query = f"""
-    CREATE (obj:{data.type} {{
-        id: $primary_value,
-        type: $type,
-        created_at: datetime(),
-        updated_at: datetime()
-    }})
-    SET obj += $properties
+    MERGE (obj:{data.type} {{id: $primary_value}})
+    ON CREATE SET 
+        obj.type = $type,
+        obj.created_at = datetime(),
+        obj.updated_at = datetime(),
+        obj += $properties
+    ON MATCH SET 
+        obj.updated_at = datetime(),
+        obj += $properties
     RETURN obj
     """
     parameters = {
