@@ -14,6 +14,7 @@ class OrderSchema(ObjectTypeSchema):
     properties_schema: dict[str, PropertyType] = {
         "name": PropertyType.STRING,
         "order_date": PropertyType.DATE,
+        "quantity": PropertyType.INTEGER,
         "total_amount": PropertyType.FLOAT,
     }
     description: str = "주문"
@@ -25,7 +26,12 @@ class Order(ObjectInstance):
     """주문 비즈니스 객체 모델"""
 
     def __init__(
-        self, order_id: str, name: str, order_date: str, total_amount: float
+        self,
+        order_id: str,
+        name: str,
+        order_date: str,
+        quantity: int,
+        total_amount: float,
     ) -> None:
         super().__init__(
             type=TYPE,
@@ -33,6 +39,7 @@ class Order(ObjectInstance):
             properties={
                 "name": name,
                 "order_date": order_date,
+                "quantity": quantity,
                 "total_amount": total_amount,
             },
         )
