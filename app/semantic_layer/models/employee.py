@@ -13,6 +13,7 @@ class EmployeeSchema(ObjectTypeSchema):
     type: str = TYPE
     properties_schema: dict[str, PropertyType] = {
         "name": PropertyType.STRING,
+        "experience_years": PropertyType.INTEGER,
     }
     description: str = "직원"
     primary_key: str = "employee_id"
@@ -22,11 +23,14 @@ class EmployeeSchema(ObjectTypeSchema):
 class Employee(ObjectInstance):
     """직원 비즈니스 객체 모델"""
 
-    def __init__(self, employee_id: str, name: str) -> None:
+    def __init__(
+        self, employee_id: str, name: str, experience_years: int
+    ) -> None:
         super().__init__(
             type=TYPE,
             primary_value=employee_id,
             properties={
                 "name": name,
+                "experience_years": experience_years,
             },
         )
