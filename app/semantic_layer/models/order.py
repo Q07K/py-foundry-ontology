@@ -13,7 +13,7 @@ class OrderSchema(ObjectTypeSchema):
     type: str = TYPE
     properties_schema: dict[str, PropertyType] = {
         "name": PropertyType.STRING,
-        "order_date": PropertyType.DATE,
+        "date": PropertyType.DATE,
         "quantity": PropertyType.INTEGER,
         "total_amount": PropertyType.FLOAT,
     }
@@ -29,7 +29,7 @@ class Order(ObjectInstance):
         self,
         order_id: str,
         name: str,
-        order_date: str,
+        date: str,
         quantity: int,
         total_amount: float,
     ) -> None:
@@ -38,7 +38,7 @@ class Order(ObjectInstance):
             primary_value=order_id,
             properties={
                 "name": name,
-                "order_date": order_date,
+                "date": date,
                 "quantity": quantity,
                 "total_amount": total_amount,
             },
