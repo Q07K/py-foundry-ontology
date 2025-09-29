@@ -1,7 +1,6 @@
 from neo4j import Driver
 
-from app.semantic_layer.models.allergen import Allergen
-from app.semantic_layer.models.base import LinkType
+from app.semantic_layer.models.base import LinkType, ObjectInstance
 
 
 def create_link(driver: Driver, link: LinkType) -> LinkType | None:
@@ -73,10 +72,15 @@ def get_links(
     return links
 
 
-def create_object(driver: Driver, data: Allergen) -> Allergen | None:
+def create_object(
+    driver: Driver,
+    data: ObjectInstance,
+) -> ObjectInstance | None:
     query = f"""
     CREATE (obj:{data.type} {{
         id: $primary_value,
+        type: $type,
+        properties: $properties,
         created_at: datetime(),
         updated_at: datetime()
     }})
@@ -88,6 +92,7 @@ def create_object(driver: Driver, data: Allergen) -> Allergen | None:
             query=query,
             parameters={
                 "primary_value": data.primary_value,
+                "type": data.type,
                 "properties": data.properties,
             },
         )
